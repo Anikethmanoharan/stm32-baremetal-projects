@@ -14,4 +14,3 @@ Target board: STM32 Nucleo-F446RE
 Projects will progressively cover GPIO, timers, communication
 interfaces and advanced peripherals.
 
-Author: Aniketh M Nair
