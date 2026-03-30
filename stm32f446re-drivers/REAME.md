@@ -1,8 +1,6 @@
 # STM32F446RE Peripheral Drivers
 
-Driver development for the **STM32F446RE** microcontroller (Nucleo-F446RE board), written from scratch in bare-metal Embedded C.
-
-This is part of my learning journey of embedded driver development.
+A bare-metal peripheral driver library for STM32F446RE, implementing GPIO, SPI, I2C, and USART from scratch using register-level programming.
 
 ---
 
