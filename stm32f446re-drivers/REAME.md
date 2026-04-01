@@ -1,25 +1,35 @@
 # STM32F446RE Peripheral Drivers
 
-A bare-metal peripheral driver library for STM32F446RE, implementing GPIO, SPI, I2C, and USART from scratch using register-level programming.
+A bare-metal peripheral driver library for the **STM32F446RE**, implementing GPIO, SPI, I2C, and USART
+from scratch.
 
 ---
 
 ## 📁 Folder Structure
 
 ```
-STM32-Drivers/
+stm32f446re-drivers/
 ├── drivers/
-│   ├── Inc/                        # Header files
-│   │   ├── stm32f446xx.h           # Device-specific header (base addresses, register definitions)
+│   ├── Inc/                             # Driver header files
+│   │   ├── stm32f446xx.h               # Device-specific header (base addresses, register definitions)
 │   │   ├── stm32f446xx_gpio_driver.h
-│   │   ├── stm32f446xx_spi_driver.h
-│   │   ├── stm32f446xx_i2c_driver.h
-│   │   └── stm32f446xx_usart_driver.h
-│   └── Src/                        # Source / implementation files
+│   │   ├── stm32f446xx_spi_driver.h    (coming soon)
+│   │   ├── stm32f446xx_i2c_driver.h    (coming soon)
+│   │   └── stm32f446xx_usart_driver.h  (coming soon)
+│   └── Src/                             # Driver source / implementation files
 │       ├── stm32f446xx_gpio_driver.c
-│       ├── stm32f446xx_spi_driver.c
-│       ├── stm32f446xx_i2c_driver.c
-│       └── stm32f446xx_usart_driver.c
+│       ├── stm32f446xx_spi_driver.c    (coming soon)
+│       ├── stm32f446xx_i2c_driver.c    (coming soon)
+│       └── stm32f446xx_usart_driver.c  (coming soon)
+│
+├── applications/                        # Test applications built using the drivers above
+│   ├── led-toggle-gpio/                 # LED blink using custom GPIO driver
+│   │   ├── 001led_toggle.c
+│   │   └── README.md
+│   └── led-toggle-button/              # Button-controlled LED using custom GPIO driver
+│       ├── 002led_button.c
+│       └── README.md
+│
 └── README.md
 ```
 
@@ -27,13 +37,24 @@ STM32-Drivers/
 
 ## ✅ Progress
 
-| Driver        | Header File | Source File | Status        |
-|---------------|-------------|-------------|---------------|
-| Device Header | `stm32f446xx.h` | —       | 🔄 In Progress |
-| GPIO          | —           | —           | ⏳ Not Started |
-| SPI           | —           | —           | ⏳ Not Started |
-| I2C           | —           | —           | ⏳ Not Started |
-| USART         | —           | —           | ⏳ Not Started |
+| Driver        | Header File                   | Source File                   | Status         |
+|---------------|-------------------------------|-------------------------------|----------------|
+| Device Header | `stm32f446xx.h`               | —                             | ✅ In Progress  |
+| GPIO          | `stm32f446xx_gpio_driver.h`   | `stm32f446xx_gpio_driver.c`   | ✅ Done         |
+| SPI           | —                             | —                             | ⏳ Not Started  |
+| I2C           | —                             | —                             | ⏳ Not Started  |
+| USART         | —                             | —                             | ⏳ Not Started  |
+
+---
+
+## 🧪 Applications
+
+Test applications written using the drivers developed in this project.
+
+| Application          | Driver Used | Description                                          |
+|----------------------|-------------|------------------------------------------------------|
+| `led-toggle-gpio`    | GPIO        | Toggles onboard LED (PA5) continuously               |
+| `led-toggle-button`  | GPIO        | Toggles onboard LED (PA5) on button press (PC13)     |
 
 ---
 
@@ -56,9 +77,9 @@ The device-specific header file contains:
 - **Board:** STM32 Nucleo-F446RE
 - **MCU:** STM32F446RET6 (ARM Cortex-M4, 180 MHz)
 - **IDE:** STM32CubeIDE
-- **Language:** Embedded C 
+- **Language:** Embedded C (bare-metal)
 - **Reference:** STM32F446xx Reference Manual (RM0390)
 
 ---
 
-*This repo is updated as I progress through the course. Files marked 🔄 are work in progress.*
+*This repo is updated as I progress through the course. Files marked 🔄 are work in progress, ⏳ are coming soon.*
