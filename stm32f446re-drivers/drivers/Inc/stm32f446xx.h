@@ -3,7 +3,32 @@
 #define INC_STM32F446XX_H_
 
 #include <stdint.h>
+
 #define __vol						volatile
+
+/*********************START:PROCESSOR SPECIFIC DETAILS*********************************/
+
+//ARM Cortex mx ISERx register addressses
+
+#define NVIC_ISER0					( (__vol uint32_t*)0xE000E100 )//we took ISER 0 - 3 because it covers majority of interupts
+#define NVIC_ISER1					( (__vol uint32_t*)0xE000E104 )
+#define NVIC_ISER2					( (__vol uint32_t*)0xE000E108 )
+#define NVIC_ISER3					( (__vol uint32_t*)0xE000E10C )
+
+//ARM Cortex mx ICERx register addressses
+
+#define NVIC_ICER0					( (__vol uint32_t*)0XE000E180 )
+#define NVIC_ICER1					( (__vol uint32_t*)0XE000E184 )
+#define NVIC_ICER2					( (__vol uint32_t*)0XE000E188 )
+#define NVIC_ICER3					( (__vol uint32_t*)0XE000E18C )
+
+//ARM Cortex mx interrupt priority register addressses
+
+#define NVIC_PR_BASE_ADDR			( (__vol uint32_t*)0xE000E400 )  //-> IPR
+
+#define NO_PR_BITS_IMPLEMENTED		4 //in some section of reg 4 bits of 8bit is implemented, eg: IPR register
+
+/*********************END:PROCESSOR SPECIFIC DETAILS*********************************/
 
 /* base addr of flash and sram memory*/
 #define FLASH_BASEADDR				0x08000000U
@@ -64,6 +89,7 @@
 
 /********************* PERIPHERAL REGISTER DEFINITION STRUCTURES *********************/
 
+//peripheral register definiiton structure for GPIO
 typedef struct
 {				//this struct contains GPIO port registers
 	__vol uint32_t MODER;					//GPIO port mode register
@@ -77,8 +103,9 @@ typedef struct
 	__vol uint32_t AFR[2];					//AFR[0] : GPIO alternate function low register , AFR[1] : GPIO alternate function high register
 }GPIO_RegDef_t;
 
+//peripheral register definiiton structure for RCC
 typedef struct
-{					//this struct contains clock (RCC) registers
+{					                    //this struct contains clock (RCC) registers
 	__vol uint32_t CR;
 	__vol uint32_t PLL;
 	__vol uint32_t CFGR;
@@ -116,6 +143,50 @@ typedef struct
 
 }RCC_RegDef_t;
 
+
+//peripheral register definiiton structure for EXTI
+
+typedef struct
+{		//this struct contains EXTI registers
+	__vol uint32_t IMR;						//Interrupt mask register
+	__vol uint32_t EMR;						//Event mask register
+	__vol uint32_t RTSR;					//Rising trigger selection register
+	__vol uint32_t FTSR;					//Falling trigger selection register
+	__vol uint32_t SWIER;					//Software interrupt event register
+	__vol uint32_t PR;						//Pending register
+
+}EXTI_RegDef_t;
+
+
+//peripheral register definiiton structure for SYSCFG_EXTICR
+
+typedef struct
+{//this struct contains SYSCFG_EXTICR registers
+	__vol uint32_t MEMRMP;					//SYSCFG memory remap register
+	__vol uint32_t PMC;						//SYSCFG peripheral mode configuration register
+	__vol uint32_t EXTICR[4];					//SYSCFG external interrupt configuration register 1
+	uint32_t RESERVED1[2];
+	__vol uint32_t CMPCR;					//Compensation cell control register
+	uint32_t RESERVED2[2];
+	__vol uint32_t CFGR;					//SYSCFG configuration register
+
+}SYSCFG_RegDef_t;
+
+//peripheral register definiiton structure for SPI
+typedef struct
+{
+	__vol uint32_t CR1;			//SPI control register 1
+	__vol uint32_t CR2; 		//SPI control register 2
+	__vol uint32_t SR;			//SPI status register
+	__vol uint32_t DR;			//SPI data register
+	__vol uint32_t CRCPR;		//SPI CRC polynomial register
+	__vol uint32_t RXCRCR;		//SPI RX CRC register
+	__vol uint32_t TXCRCR;		//SPI TX CRC register
+	__vol uint32_t I2SCFGR;		//SPI_I2S configuration register
+	__vol uint32_t I2SPR;		//SPI_I2S prescaler register
+
+}SPI_RegDef_t;
+
 /*
  *peripheral definitions             -- using macro will not use ram and it is direct execution
  */
@@ -130,6 +201,15 @@ typedef struct
 #define GPIOH					(GPIO_RegDef_t*)GPIOH_BASEADDR
 
 #define RCC						((RCC_RegDef_t*)RCC_BASEADDR)
+
+#define EXTI					((EXTI_RegDef_t*)EXT1_BASEADDR)
+
+#define SYSCFG					((SYSCFG_RegDef_t*)SYSCFG_BASEADDR)
+
+#define SPI1					((SPI_RegDef_t*)SPI1_BASEADDR)
+#define SPI2					((SPI_RegDef_t*)SPI2_BASEADDR)
+#define SPI3					((SPI_RegDef_t*)SPI3_BASEADDR)
+#define SPI4					((SPI_RegDef_t*)SPI4_BASEADDR)
 
 
 /*
@@ -195,10 +275,9 @@ typedef struct
 /*
  * CLOCK DISABLE MACRO FOR I2Cx PERIPHERALS
  * */
-#define SPI1_PCLK_DI()		( RCC->APB2ENR &= ~(1 << 12) )
-#define SPI4_PCLK_DI()		( RCC->APB2ENR &= ~(1 << 13) )
-#define SPI2_PCLK_DI()		( RCC->APB1ENR &= ~(1 << 14) )
-#define SPI3_PCLK_DI()		( RCC->APB1ENR &= ~(1 << 15) )
+#define I2C1_PCLK_DI()		( RCC->APB1ENR &= ~(1 << 21) ) //I2C1 HANGS ON APB1 AND 12CEN IS 21ST BIT ON APB1ENR REG
+#define I2C2_PCLK_DI()		( RCC->APB1ENR &= ~(1 << 22) )
+#define I2C3_PCLK_DI()		( RCC->APB1ENR &= ~(1 << 23) )
 
 /*
  * CLOCK DISABLE MACRO FOR SPIx PERIPHERALS
@@ -223,9 +302,10 @@ typedef struct
  * */
 #define SYSCFG_PCLK_DI()		( RCC->APB2ENR &= ~(1 << 14) )
 
+
 /*
  * MACROS TO RESET GPIOx PERIPHERALS
- * */
+ */
 #define GPIOA_REG_RESET()		do{ (RCC->AHB1RSTR |= (1 << 0)) ; (RCC->AHB1RSTR &= ~(1 << 0));}while(0)
 #define GPIOB_REG_RESET()		do{ (RCC->AHB1RSTR |= (1 << 1)) ; (RCC->AHB1RSTR &= ~(1 << 1));}while(0)
 #define GPIOC_REG_RESET()		do{ (RCC->AHB1RSTR |= (1 << 2)) ; (RCC->AHB1RSTR &= ~(1 << 2));}while(0)
@@ -236,6 +316,38 @@ typedef struct
 #define GPIOH_REG_RESET()		do{ (RCC->AHB1RSTR |= (1 << 7)) ; (RCC->AHB1RSTR &= ~(1 << 7));}while(0)
 
 
+/*
+ * MACROS TO RESET SPIx PERIPHERALS
+ */
+#define SPI1_REG_RESET()		do{(RCC->APB2RSTR |= (1 << 12)) ; (RCC->APB2RSTR &= ~(1 << 12));}while(0)
+#define SPI2_REG_RESET()		do{(RCC->APB1RSTR |= (1 << 14)) ; (RCC->APB1RSTR &= ~(1 << 14));}while(0)
+#define SPI3_REG_RESET()		do{(RCC->APB1RSTR |= (1 << 15)) ; (RCC->APB1RSTR &= ~(1 << 15));}while(0)
+#define SPI4_REG_RESET()		do{(RCC->APB2RSTR |= (1 << 13)) ; (RCC->APB2RSTR &= ~(1 << 13));}while(0)
+
+//return portcode for given GPIOx base addr	//c conditional / ternary operation
+
+#define GPIO_BASEADDR_TO_CODE(x)	   ( (x == GPIOA) ? 0 :\
+										 (x == GPIOB) ? 1 :\
+										 (x == GPIOC) ? 2 :\
+										 (x == GPIOD) ? 3 :\
+                                         (x == GPIOE) ? 4 :\
+                                         (x == GPIOF) ? 5 :\
+                                         (x == GPIOG) ? 6 :\
+                                         (x == GPIOH) ? 7 :0)
+
+
+/*
+ * IRQ (interrupt request)  numbers of stm32f446xx mcu for EXTI --> reference manual vector table
+ * */
+//for @GPIO_IRQConfig in stm32f446xx_gpio_driver.c
+
+#define IRQ_NO_EXTI0				6
+#define IRQ_NO_EXTI1				7
+#define IRQ_NO_EXTI2				8
+#define IRQ_NO_EXTI3				9
+#define IRQ_NO_EXTI4				10
+#define IRQ_NO_EXTI9_5				23
+#define IRQ_NO_EXTI15_10			40
 
 //SOME GENERIC MACROS to be used by all drivers
 #define ENABLE 				1
@@ -245,5 +357,52 @@ typedef struct
 #define GPIO_PIN_SET 		SET
 #define GPIO_PIN_RESET 		RESET
 
+#define FLAG_RESET			RESET
+#define FLAG_SET			SET
 
+
+
+/****************************************************
+ *BIT POSITION DEFINITION FOR SPI PERIPHERAL REGISTERS
+ ****************************************************/
+          //SPI_CRC1 reg
+#define SPI_CR1_CPHA		0
+#define SPI_CR1_CPOL		1
+#define SPI_CR1_MSTR		2
+#define SPI_CR1_BR			3
+#define SPI_CR1_SPE			6
+#define SPI_CR1_LSBFIRST	7
+#define SPI_CR1_SSI			8
+#define SPI_CR1_SSM			9
+#define SPI_CR1_RXONLY		10
+#define SPI_CR1_DFF			11
+#define SPI_CR1_CRCNEXT		12
+#define SPI_CR1_CRCEN		13
+#define SPI_CR1_BIDIOE		14
+#define SPI_CR1_BIDIMODE	15
+
+          //SPI_CRC2 reg
+#define SPI_CR2_RXDMAEN		0
+#define SPI_CR2_TXDMAEN		1
+#define SPI_CR2_SSOE		2
+#define SPI_CR2_FRF			4
+#define SPI_CR2_ERRIE		5
+#define SPI_CR2_RXNEIE		6
+#define SPI_CR2_TXEIE		7
+
+          //SPI_SR reg
+#define SPI_SR_RXNE			0
+#define SPI_SR_TXE			1
+#define SPI_SR_CHSIDE		2
+#define SPI_SR_UDR			3
+#define SPI_SR_CRCERR		4
+#define SPI_SR_MODF			5
+#define SPI_SR_OVR			6
+#define SPI_SR_BSY			7
+#define SPI_SR_FRE			8
+
+
+
+#include "stm32f446xx_gpio_driver.h"
+#include "stm32f446xx_spi_driver.h"
 #endif /* INC_STM32F446XX_H_ */
