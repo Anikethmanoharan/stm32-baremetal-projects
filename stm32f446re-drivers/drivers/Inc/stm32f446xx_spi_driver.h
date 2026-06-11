@@ -105,7 +105,7 @@ void SPI_DeInit(SPI_RegDef_t *pSPIx);
  * Data send and receive
  */
 void SPI_SendData(SPI_RegDef_t *pSPIx , uint8_t *pTxBuffer , uint32_t Len);
-void Data_ReceieveData(SPI_RegDef_t *pSPIx ,  uint8_t *pRxBuffer , uint32_t Len);
+void SPI_ReceieveData(SPI_RegDef_t *pSPIx ,  uint8_t *pRxBuffer , uint32_t Len);
 
 /*
  * IRQ Configuration and ISR Handling
